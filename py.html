@@ -5,19 +5,26 @@
   </head>
   <body>
     <py-script>
-        >>> import platform
-        >>> platform.machine()
-        'x86'
-        >>> platform.version()
-        '5.1.2600'
-        >>> platform.platform()
-        'Windows-XP-5.1.2600-SP2'
-        >>> platform.uname()
-        ('Windows', 'name', 'XP', '5.1.2600', 'x86', 'x86 Family 6 Model 15 Stepping 6, GenuineIntel')
-        >>> platform.system()
-        'Windows'
-        >>> platform.processor()
-        'x86 Family 6 Model 15 Stepping 6, GenuineIntel'
+        import platform,socket,re,uuid,json,psutil,logging
+
+          def getSystemInfo():
+    try:
+        info={}
+        info['platform']=platform.system()
+        info['platform-release']=platform.release()
+        info['platform-version']=platform.version()
+        info['architecture']=platform.machine()
+        info['hostname']=socket.gethostname()
+        info['ip-address']=socket.gethostbyname(socket.gethostname())
+        info['mac-address']=':'.join(re.findall('..', '%012x' % uuid.getnode()))
+        info['processor']=platform.processor()
+        info['ram']=str(round(psutil.virtual_memory().total / (1024.0 **3)))+" GB"
+        return json.dumps(info)
+    except Exception as e:
+        logging.exception(e)
+
+json.loads(getSystemInfo())
+      
       </py-script>
   </body>
 </html>
